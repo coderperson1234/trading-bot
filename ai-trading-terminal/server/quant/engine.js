@@ -16,6 +16,7 @@ const alpaca = require('../alpaca');
 const strategies = [
   require('./strategies/sma-cross'),
   require('./strategies/rsi-reversion'),
+  require('./strategies/momentum'),
 ];
 const strategyById = new Map(strategies.map((s) => [s.id, s]));
 

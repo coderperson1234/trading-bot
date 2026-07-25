@@ -68,8 +68,20 @@ async function news(uid, symbols, limit = 30) {
   }));
 }
 
+// Rough calendar-day span needed to collect `limit` bars of a given timeframe,
+// so we always send an explicit `start` (Alpaca returns nothing without one).
+function lookbackDays(timeframe, limit) {
+  const unit = /min/i.test(timeframe) ? 'min' : /hour/i.test(timeframe) ? 'hour' : 'day';
+  if (unit === 'day') return Math.ceil(limit * 1.5) + 5; // ~5 trading days per 7 calendar days
+  if (unit === 'hour') return Math.ceil(limit / 6) + 3; // ~6.5 trading hours per day
+  const perDay = Math.max(1, 390 / (parseInt(timeframe, 10) || 1)); // minutes in a session
+  return Math.ceil(limit / perDay) + 3;
+}
+
 async function bars(uid, symbol, timeframe = '1Day', limit = 200) {
-  const q = new URLSearchParams({ timeframe, limit: String(limit), adjustment: 'split', feed: 'iex' });
+  const startMs = Date.now() - lookbackDays(timeframe, limit) * 86400000;
+  const start = new Date(startMs).toISOString().slice(0, 10);
+  const q = new URLSearchParams({ timeframe, limit: String(limit), adjustment: 'split', feed: 'iex', start });
   const body = await data(uid, `/v2/stocks/${encodeURIComponent(symbol)}/bars?${q}`);
   return (body.bars || []).map((b) => ({ t: b.t, o: b.o, h: b.h, l: b.l, c: b.c, v: b.v }));
 }
