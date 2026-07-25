@@ -129,6 +129,40 @@ export const useStore = create((set, get) => {
       get().showToast(`${ticker} added`);
     },
 
+    // Sell / reduce a position. Optionally also submits a market SELL order to
+    // Alpaca (paper) when placeOrder is true.
+    sellHolding: async (clientId, holdingId, sellQty, { placeOrder } = {}) => {
+      const client = get().clients.find((c) => c.id === clientId);
+      const holding = client?.portfolio.holdings.find((h) => h.id === holdingId);
+      if (!holding) return;
+      const qty = Math.min(Number(sellQty) || 0, holding.qty);
+      if (qty <= 0) return;
+
+      if (placeOrder) {
+        try {
+          await api('/api/alpaca/orders', {
+            method: 'POST',
+            body: JSON.stringify({ symbol: holding.ticker, qty, side: 'sell', type: 'market', time_in_force: 'day' }),
+          });
+          get().showToast(`Sell order for ${qty} ${holding.ticker} submitted to Alpaca`);
+        } catch (e) {
+          get().showToast(`Alpaca order failed: ${e.message}`);
+        }
+      }
+
+      await patchPortfolio(clientId, (pf) => {
+        const target = pf.holdings.find((h) => h.id === holdingId);
+        const remaining = target.qty - qty;
+        const holdings = remaining > 0
+          ? pf.holdings.map((h) => (h.id === holdingId ? { ...h, qty: remaining } : h))
+          : pf.holdings.filter((h) => h.id !== holdingId);
+        return { ...pf, holdings };
+      });
+      if (!placeOrder) {
+        get().showToast(qty >= holding.qty ? `${holding.ticker} position closed` : `Sold ${qty} ${holding.ticker}`);
+      }
+    },
+
     replaceHoldings: async (clientId, holdings) => {
       await patchPortfolio(clientId, (pf) => ({ ...pf, holdings }));
       get().showToast('Holdings updated');

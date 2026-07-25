@@ -6,6 +6,7 @@ import { portfolioStats, allocationByType, TYPE_COLOR, PI_CATEGORY_COLOR, RISK_T
 import { fmtUsd, fmtPct, fmtNum, fmtDate } from '../lib/format';
 import { Icon, RiskPill, ActionPill, NaTip, SectionedSummary, AiThinking, EmptyState } from '../components/ui';
 import AddToPortfolio from '../components/AddToPortfolio';
+import SellHolding from '../components/SellHolding';
 
 const REBAL_MESSAGES = [
   'Analysing portfolio allocations…',
@@ -504,6 +505,7 @@ export default function Dashboard() {
                 <tr>
                   <th>Symbol</th><th>Type</th><th>Qty</th><th>Avg Price</th><th>Current Price</th>
                   <th>Return %</th><th>Weight %</th><th>Analyst Rec.</th><th>Median Target</th>
+                  <th style={{ width: 80 }}></th>
                 </tr>
               </thead>
               <tbody>
@@ -526,6 +528,9 @@ export default function Dashboard() {
                       {r.assetType === 'etf' ? <NaTip tip="ETF price follows the underlying index — no price target" />
                         : r.assetType === 'bond' ? <NaTip tip="Bond return is based on coupon & par value — no price target" />
                         : r.medianTarget != null ? fmtUsd(r.medianTarget) : <span className="muted tiny">—</span>}
+                    </td>
+                    <td style={{ textAlign: 'right' }}>
+                      {r.qty > 0 && <SellHolding clientId={client.id} holding={r} />}
                     </td>
                   </tr>
                 ))}
