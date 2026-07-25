@@ -1,0 +1,77 @@
+// Thin Alpaca REST client. Uses env vars by default, with optional
+// per-manager credential overrides stored via /api/alpaca/credentials.
+const { load } = require('./store');
+
+function credsFor(uid) {
+  const db = load();
+  const override = db.alpacaCreds[uid];
+  const keyId = (override && override.keyId) || process.env.ALPACA_API_KEY_ID || process.env.APCA_API_KEY_ID || '';
+  const secret = (override && override.secret) || process.env.ALPACA_API_SECRET_KEY || process.env.APCA_API_SECRET_KEY || '';
+  const paper = override ? override.paper !== false : (process.env.ALPACA_PAPER || 'true') !== 'false';
+  return { keyId, secret, paper };
+}
+
+function configured(uid) {
+  const { keyId, secret } = credsFor(uid);
+  return Boolean(keyId && secret);
+}
+
+function tradingBase(uid) {
+  const { paper } = credsFor(uid);
+  return paper ? 'https://paper-api.alpaca.markets' : 'https://api.alpaca.markets';
+}
+
+const DATA_BASE = 'https://data.alpaca.markets';
+
+async function alpacaFetch(uid, base, pathName, options = {}) {
+  const { keyId, secret } = credsFor(uid);
+  if (!keyId || !secret) {
+    const err = new Error('Alpaca is not configured. Set ALPACA_API_KEY_ID / ALPACA_API_SECRET_KEY or save keys in Settings.');
+    err.status = 428;
+    throw err;
+  }
+  const res = await fetch(base + pathName, {
+    ...options,
+    headers: {
+      'APCA-API-KEY-ID': keyId,
+      'APCA-API-SECRET-KEY': secret,
+      'Content-Type': 'application/json',
+      ...(options.headers || {}),
+    },
+  });
+  const body = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    const err = new Error(body.message || `Alpaca error ${res.status}`);
+    err.status = res.status;
+    throw err;
+  }
+  return body;
+}
+
+const trading = (uid, p, o) => alpacaFetch(uid, tradingBase(uid), p, o);
+const data = (uid, p, o) => alpacaFetch(uid, DATA_BASE, p, o);
+
+async function latestPrice(uid, symbol) {
+  const body = await data(uid, `/v2/stocks/${encodeURIComponent(symbol)}/trades/latest`);
+  return body && body.trade ? body.trade.p : null;
+}
+
+async function news(uid, symbols, limit = 30) {
+  const q = new URLSearchParams({ symbols: symbols.join(','), limit: String(limit), sort: 'desc' });
+  const body = await data(uid, `/v1beta1/news?${q}`);
+  return (body.news || []).map((n) => ({
+    tckr: (n.symbols && n.symbols[0]) || symbols[0],
+    date: n.created_at,
+    title: n.headline,
+    publisher: n.source,
+    link: n.url,
+  }));
+}
+
+async function bars(uid, symbol, timeframe = '1Day', limit = 200) {
+  const q = new URLSearchParams({ timeframe, limit: String(limit), adjustment: 'split', feed: 'iex' });
+  const body = await data(uid, `/v2/stocks/${encodeURIComponent(symbol)}/bars?${q}`);
+  return (body.bars || []).map((b) => ({ t: b.t, o: b.o, h: b.h, l: b.l, c: b.c, v: b.v }));
+}
+
+module.exports = { credsFor, configured, trading, data, latestPrice, news, bars };

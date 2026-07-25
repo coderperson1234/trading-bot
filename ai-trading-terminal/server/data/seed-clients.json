@@ -1,0 +1,761 @@
+[
+ {
+  "id": "1",
+  "name": "Wei Ming Tan",
+  "email": "weiming.tan@example.com",
+  "risk": "Conservative",
+  "horizon": "Mid-term",
+  "since": "",
+  "portfolio": {
+   "name": "Income Portfolio",
+   "strategy": "Income",
+   "holdings": [
+    {
+     "id": "60",
+     "ticker": "NVDA",
+     "qty": 1200,
+     "avgCost": 176.28,
+     "assetType": "equity",
+     "orgName": "NVIDIA Corp.",
+     "currentPrice": 206.84,
+     "returnPct": 17.3361,
+     "analystRec": "Buy (79%), Strong Buy (16%)",
+     "medianTarget": 285
+    },
+    {
+     "id": "59",
+     "ticker": "QQQ",
+     "qty": 700,
+     "avgCost": 608.99,
+     "assetType": "etf",
+     "orgName": "Invesco QQQ Trust",
+     "currentPrice": 684.23,
+     "returnPct": 12.3549
+    },
+    {
+     "id": "20",
+     "ticker": "JNJ",
+     "qty": 1500,
+     "avgCost": 211.8193,
+     "assetType": "equity",
+     "orgName": "Johnson & Johnson",
+     "currentPrice": 263.4,
+     "returnPct": 24.3513,
+     "analystRec": "Buy (40%), Hold (36%)",
+     "medianTarget": 260
+    },
+    {
+     "id": "21",
+     "ticker": "KO",
+     "qty": 400,
+     "avgCost": 70.4853,
+     "assetType": "equity",
+     "orgName": "Coca-Cola Co.",
+     "currentPrice": 82.25,
+     "returnPct": 16.691,
+     "analystRec": "Buy (50%), Strong Buy (29%)",
+     "medianTarget": 88
+    },
+    {
+     "id": "58",
+     "ticker": "AMZN",
+     "qty": 4000,
+     "avgCost": 222.54,
+     "assetType": "equity",
+     "orgName": "Amazon.com Inc.",
+     "currentPrice": 232.11,
+     "returnPct": 4.3004,
+     "analystRec": "Buy (71%), Strong Buy (23%)",
+     "medianTarget": 317
+    },
+    {
+     "id": "56",
+     "ticker": "TSLA",
+     "qty": 3100,
+     "avgCost": 450,
+     "assetType": "equity",
+     "orgName": "Tesla Inc.",
+     "currentPrice": 313.03,
+     "returnPct": -30.4378,
+     "analystRec": "Buy (38%), Hold (36%)",
+     "medianTarget": 450
+    }
+   ],
+   "watchlist": [
+    {
+     "id": "11",
+     "ticker": "QQQ",
+     "source": "ai",
+     "orgName": "Invesco QQQ Trust"
+    },
+    {
+     "id": "14",
+     "ticker": "IWM",
+     "source": "ai",
+     "orgName": "iShares Russell 2000 ETF"
+    },
+    {
+     "id": "74",
+     "ticker": "AMD",
+     "source": "manual",
+     "orgName": "Advanced Micro Devices Inc."
+    },
+    {
+     "id": "12",
+     "ticker": "AVGO",
+     "source": "ai",
+     "orgName": "Broadcom Inc."
+    },
+    {
+     "id": "13",
+     "ticker": "LLY",
+     "source": "ai",
+     "orgName": "Eli Lilly and Company"
+    },
+    {
+     "id": "73",
+     "ticker": "META",
+     "source": "manual",
+     "orgName": "Meta Platforms Inc."
+    }
+   ]
+  }
+ },
+ {
+  "id": "2",
+  "name": "Priya Nair",
+  "email": "priya.nair@example.com",
+  "risk": "Aggressive",
+  "horizon": "Long-term",
+  "since": "",
+  "portfolio": {
+   "name": "Growth Portfolio",
+   "strategy": "Growth",
+   "holdings": [
+    {
+     "id": "27",
+     "ticker": "VOO",
+     "qty": 600,
+     "avgCost": 622.2294,
+     "assetType": "etf",
+     "orgName": "Vanguard S&P 500 ETF",
+     "currentPrice": 679.14,
+     "returnPct": 9.1462
+    },
+    {
+     "id": "17",
+     "ticker": "AAPL",
+     "qty": 2000,
+     "avgCost": 273.6017,
+     "assetType": "equity",
+     "orgName": "Apple Inc.",
+     "currentPrice": 333.02,
+     "returnPct": 21.7171,
+     "analystRec": "Buy (48%), Hold (31%)",
+     "medianTarget": 310
+    },
+    {
+     "id": "22",
+     "ticker": "MSFT",
+     "qty": 1000,
+     "avgCost": 472.7149,
+     "assetType": "equity",
+     "orgName": "Microsoft Corp.",
+     "currentPrice": 381.7,
+     "returnPct": -19.2537,
+     "analystRec": "Buy (75%), Strong Buy (20%)",
+     "medianTarget": 557.5
+    }
+   ],
+   "watchlist": [
+    {
+     "id": "15",
+     "ticker": "VOO",
+     "source": "ai",
+     "orgName": "Vanguard S&P 500 ETF"
+    },
+    {
+     "id": "16",
+     "ticker": "VTI",
+     "source": "ai",
+     "orgName": "Vanguard Total Stock Market ETF"
+    },
+    {
+     "id": "17",
+     "ticker": "VXUS",
+     "source": "ai",
+     "orgName": "Vanguard Total International Stock ETF"
+    },
+    {
+     "id": "19",
+     "ticker": "SCHD",
+     "source": "ai",
+     "orgName": "Schwab U.S. Dividend Equity ETF"
+    },
+    {
+     "id": "18",
+     "ticker": "BND",
+     "source": "ai",
+     "orgName": "Vanguard Total Bond Market ETF"
+    },
+    {
+     "id": "20",
+     "ticker": "AVGO",
+     "source": "ai",
+     "orgName": "Broadcom Inc."
+    },
+    {
+     "id": "72",
+     "ticker": "DIS",
+     "source": "manual",
+     "orgName": "Walt Disney Co."
+    },
+    {
+     "id": "22",
+     "ticker": "JNJ",
+     "source": "ai",
+     "orgName": "Johnson & Johnson"
+    },
+    {
+     "id": "71",
+     "ticker": "NFLX",
+     "source": "manual",
+     "orgName": "Netflix Inc."
+    },
+    {
+     "id": "21",
+     "ticker": "UNH",
+     "source": "ai",
+     "orgName": "UnitedHealth Group Incorporated"
+    }
+   ]
+  }
+ },
+ {
+  "id": "5",
+  "name": "Michelle Wong",
+  "email": "michelle.wong@example.com",
+  "risk": "Moderate",
+  "horizon": "Mid-term",
+  "since": "",
+  "portfolio": {
+   "name": "Value Portfolio",
+   "strategy": "Value",
+   "holdings": [
+    {
+     "id": "19",
+     "ticker": "GOOGL",
+     "qty": 1500,
+     "avgCost": 308.0032,
+     "assetType": "equity",
+     "orgName": "Alphabet Inc. Class A",
+     "currentPrice": 319.74,
+     "returnPct": 3.8106,
+     "analystRec": "Buy (67%), Strong Buy (22%)",
+     "medianTarget": 430
+    },
+    {
+     "id": "33",
+     "ticker": "BND",
+     "qty": 2000,
+     "avgCost": 72.9162,
+     "assetType": "bond",
+     "orgName": "Vanguard Total Bond Market ETF",
+     "currentPrice": 72.31,
+     "returnPct": -0.8314
+    },
+    {
+     "id": "28",
+     "ticker": "VTI",
+     "qty": 900,
+     "avgCost": 333.3372,
+     "assetType": "etf",
+     "orgName": "Vanguard Total Stock Market ETF",
+     "currentPrice": 364.8,
+     "returnPct": 9.4387
+    },
+    {
+     "id": "39",
+     "ticker": "MUB",
+     "qty": 1000,
+     "avgCost": 105.4281,
+     "assetType": "bond",
+     "orgName": "iShares National Muni Bond ETF",
+     "currentPrice": 105.55,
+     "returnPct": 0.1156
+    },
+    {
+     "id": "16",
+     "ticker": "AAPL",
+     "qty": 1000,
+     "avgCost": 273.6017,
+     "assetType": "equity",
+     "orgName": "Apple Inc.",
+     "currentPrice": 333.02,
+     "returnPct": 21.7171,
+     "analystRec": "Buy (48%), Hold (31%)",
+     "medianTarget": 310
+    },
+    {
+     "id": "26",
+     "ticker": "SPY",
+     "qty": 600,
+     "avgCost": 676.8759,
+     "assetType": "etf",
+     "orgName": "SPDR S&P 500 ETF Trust",
+     "currentPrice": 738.93,
+     "returnPct": 9.1677
+    }
+   ],
+   "watchlist": [
+    {
+     "id": "38",
+     "ticker": "VOO",
+     "source": "ai",
+     "orgName": "Vanguard S&P 500 ETF"
+    },
+    {
+     "id": "39",
+     "ticker": "VTI",
+     "source": "ai",
+     "orgName": "Vanguard Total Stock Market ETF"
+    },
+    {
+     "id": "43",
+     "ticker": "QQQ",
+     "source": "ai",
+     "orgName": "Invesco QQQ Trust"
+    },
+    {
+     "id": "49",
+     "ticker": "IWM",
+     "source": "ai",
+     "orgName": "iShares Russell 2000 ETF"
+    },
+    {
+     "id": "40",
+     "ticker": "VXUS",
+     "source": "ai",
+     "orgName": "Vanguard Total International Stock ETF"
+    },
+    {
+     "id": "42",
+     "ticker": "SCHD",
+     "source": "ai",
+     "orgName": "Schwab U.S. Dividend Equity ETF"
+    },
+    {
+     "id": "41",
+     "ticker": "BND",
+     "source": "ai",
+     "orgName": "Vanguard Total Bond Market ETF"
+    },
+    {
+     "id": "50",
+     "ticker": "TLT",
+     "source": "ai",
+     "orgName": "iShares 20+ Year Treasury Bond ETF"
+    },
+    {
+     "id": "44",
+     "ticker": "AVGO",
+     "source": "ai",
+     "orgName": "Broadcom Inc."
+    },
+    {
+     "id": "48",
+     "ticker": "BRK.B",
+     "source": "ai",
+     "orgName": "Berkshire Hathaway Inc. Class B"
+    },
+    {
+     "id": "47",
+     "ticker": "JNJ",
+     "source": "ai",
+     "orgName": "Johnson & Johnson"
+    },
+    {
+     "id": "45",
+     "ticker": "LLY",
+     "source": "ai",
+     "orgName": "Eli Lilly and Company"
+    },
+    {
+     "id": "66",
+     "ticker": "MCD",
+     "source": "manual",
+     "orgName": "McDonald's Corp."
+    },
+    {
+     "id": "64",
+     "ticker": "TSLA",
+     "source": "manual",
+     "orgName": "Tesla Inc."
+    },
+    {
+     "id": "46",
+     "ticker": "UNH",
+     "source": "ai",
+     "orgName": "UnitedHealth Group Incorporated"
+    },
+    {
+     "id": "51",
+     "ticker": "GLD",
+     "source": "ai",
+     "orgName": "SPDR Gold Shares"
+    },
+    {
+     "id": "65",
+     "ticker": "COIN",
+     "source": "manual"
+    }
+   ]
+  }
+ },
+ {
+  "id": "6",
+  "name": "Chandan Das",
+  "email": "chandan.das@client.com",
+  "risk": "Conservative",
+  "horizon": "Mid-term",
+  "since": "2026",
+  "portfolio": {
+   "name": "Growth Portfolio",
+   "strategy": "Growth",
+   "holdings": [
+    {
+     "id": "80",
+     "ticker": "QQQ",
+     "qty": 400,
+     "avgCost": 608.99,
+     "assetType": "etf",
+     "orgName": "Invesco QQQ Trust",
+     "currentPrice": 684.23,
+     "returnPct": 12.3549
+    },
+    {
+     "id": "82",
+     "ticker": "TSLA",
+     "qty": 500,
+     "avgCost": 375.31,
+     "assetType": "equity",
+     "orgName": "Tesla Inc.",
+     "currentPrice": 313.03,
+     "returnPct": -16.5943,
+     "analystRec": "Buy (38%), Hold (36%)",
+     "medianTarget": 450
+    },
+    {
+     "id": "81",
+     "ticker": "AMZN",
+     "qty": 2000,
+     "avgCost": 222.54,
+     "assetType": "equity",
+     "orgName": "Amazon.com Inc.",
+     "currentPrice": 232.11,
+     "returnPct": 4.3004,
+     "analystRec": "Buy (71%), Strong Buy (23%)",
+     "medianTarget": 317
+    },
+    {
+     "id": "79",
+     "ticker": "NVDA",
+     "qty": 1400,
+     "avgCost": 176.28,
+     "assetType": "equity",
+     "orgName": "NVIDIA Corp.",
+     "currentPrice": 206.84,
+     "returnPct": 17.3361,
+     "analystRec": "Buy (79%), Strong Buy (16%)",
+     "medianTarget": 285
+    },
+    {
+     "id": "83",
+     "ticker": "ABT",
+     "qty": 100,
+     "avgCost": 80,
+     "assetType": "equity",
+     "orgName": "Abbott Laboratories",
+     "currentPrice": 103.06,
+     "returnPct": 28.825,
+     "analystRec": "Buy (57%), Hold (25%)",
+     "medianTarget": 115
+    }
+   ],
+   "watchlist": [
+    {
+     "id": "75",
+     "ticker": "ABBV",
+     "source": "manual",
+     "orgName": "AbbVie Inc."
+    },
+    {
+     "id": "76",
+     "ticker": "BK",
+     "source": "manual",
+     "orgName": "Bank of New York Mellon Corp."
+    },
+    {
+     "id": "77",
+     "ticker": "MMM",
+     "source": "manual",
+     "orgName": "3M Co."
+    }
+   ]
+  }
+ },
+ {
+  "id": "7",
+  "name": "Chiku Das",
+  "email": "chiku@gmail.com",
+  "risk": "Aggressive",
+  "horizon": "Mid-term",
+  "since": "2026",
+  "portfolio": {
+   "name": "Value Portfolio",
+   "strategy": "Value",
+   "holdings": [
+    {
+     "id": "71",
+     "ticker": "QQQ",
+     "qty": 500,
+     "avgCost": 608.99,
+     "assetType": "etf",
+     "orgName": "Invesco QQQ Trust",
+     "currentPrice": 684.23,
+     "returnPct": 12.3549
+    },
+    {
+     "id": "63",
+     "ticker": "TSLA",
+     "qty": 2000,
+     "avgCost": 475.31,
+     "assetType": "equity",
+     "orgName": "Tesla Inc.",
+     "currentPrice": 313.03,
+     "returnPct": -34.1419,
+     "analystRec": "Buy (38%), Hold (36%)",
+     "medianTarget": 450
+    },
+    {
+     "id": "72",
+     "ticker": "AMZN",
+     "qty": 2000,
+     "avgCost": 222.54,
+     "assetType": "equity",
+     "orgName": "Amazon.com Inc.",
+     "currentPrice": 232.11,
+     "returnPct": 4.3004,
+     "analystRec": "Buy (71%), Strong Buy (23%)",
+     "medianTarget": 317
+    },
+    {
+     "id": "73",
+     "ticker": "NVDA",
+     "qty": 1200,
+     "avgCost": 176.28,
+     "assetType": "equity",
+     "orgName": "NVIDIA Corp.",
+     "currentPrice": 206.84,
+     "returnPct": 17.3361,
+     "analystRec": "Buy (79%), Strong Buy (16%)",
+     "medianTarget": 285
+    },
+    {
+     "id": "44",
+     "ticker": "SPY",
+     "qty": 91,
+     "avgCost": 80,
+     "assetType": "etf",
+     "orgName": "SPDR S&P 500 ETF Trust",
+     "currentPrice": 738.93,
+     "returnPct": 823.6625
+    }
+   ],
+   "watchlist": []
+  }
+ },
+ {
+  "id": "8",
+  "name": "Atanu Sarkar",
+  "email": "asarkar@gmail.com",
+  "risk": "Aggressive",
+  "horizon": "Short-term",
+  "since": "2026",
+  "portfolio": {
+   "name": "Custom Portfolio",
+   "strategy": "Custom",
+   "holdings": [
+    {
+     "id": "84",
+     "ticker": "AMD",
+     "qty": 12,
+     "avgCost": 510,
+     "assetType": "equity",
+     "orgName": "Advanced Micro Devices Inc.",
+     "currentPrice": 521.95,
+     "returnPct": 2.3431,
+     "analystRec": "Buy (71%), Hold (20%)",
+     "medianTarget": 482.5
+    },
+    {
+     "id": "85",
+     "ticker": "SPY",
+     "qty": 5,
+     "avgCost": 730,
+     "assetType": "etf",
+     "orgName": "SPDR S&P 500 ETF Trust",
+     "currentPrice": 738.93,
+     "returnPct": 1.2233
+    },
+    {
+     "id": "86",
+     "ticker": "GOOG",
+     "qty": 3,
+     "avgCost": 360,
+     "assetType": "equity",
+     "orgName": "Alphabet Inc. Class C",
+     "currentPrice": 319.09,
+     "returnPct": -11.3639,
+     "analystRec": "Buy (68%), Strong Buy (22%)",
+     "medianTarget": 430
+    },
+    {
+     "id": "70",
+     "ticker": "TSLA",
+     "qty": 1502,
+     "avgCost": 475.21,
+     "assetType": "equity",
+     "orgName": "Tesla Inc.",
+     "currentPrice": 313.03,
+     "returnPct": -34.1281,
+     "analystRec": "Buy (38%), Hold (36%)",
+     "medianTarget": 450
+    }
+   ],
+   "watchlist": []
+  }
+ },
+ {
+  "id": "10",
+  "name": "Raj Mitta",
+  "email": "Raj Mitta@gmail.com",
+  "risk": "Conservative",
+  "horizon": "Mid-term",
+  "since": "2026",
+  "portfolio": {
+   "name": "Income Portfolio",
+   "strategy": "Income",
+   "holdings": [
+    {
+     "id": "53",
+     "ticker": "AAPL",
+     "qty": 200,
+     "avgCost": 250,
+     "assetType": "equity",
+     "orgName": "Apple Inc.",
+     "currentPrice": 333.02,
+     "returnPct": 33.208,
+     "analystRec": "Buy (48%), Hold (31%)",
+     "medianTarget": 310
+    },
+    {
+     "id": "54",
+     "ticker": "ABT",
+     "qty": 1000,
+     "avgCost": 130,
+     "assetType": "equity",
+     "orgName": "Abbott Laboratories",
+     "currentPrice": 103.06,
+     "returnPct": -20.7231,
+     "analystRec": "Buy (57%), Hold (25%)",
+     "medianTarget": 115
+    },
+    {
+     "id": "74",
+     "ticker": "NVDA",
+     "qty": 150,
+     "avgCost": 201,
+     "assetType": "equity",
+     "orgName": "NVIDIA Corp.",
+     "currentPrice": 206.84,
+     "returnPct": 2.9055,
+     "analystRec": "Buy (79%), Strong Buy (16%)",
+     "medianTarget": 285
+    },
+    {
+     "id": "75",
+     "ticker": "MMM",
+     "qty": 400,
+     "avgCost": 150,
+     "assetType": "equity",
+     "orgName": "3M Co.",
+     "currentPrice": 172.62,
+     "returnPct": 15.08,
+     "analystRec": "Buy (44%), Hold (39%)",
+     "medianTarget": 171
+    },
+    {
+     "id": "88",
+     "ticker": "SPY",
+     "qty": 5,
+     "avgCost": 730,
+     "assetType": "etf",
+     "orgName": "SPDR S&P 500 ETF Trust",
+     "currentPrice": 738.93,
+     "returnPct": 1.2233
+    },
+    {
+     "id": "87",
+     "ticker": "AMD",
+     "qty": 12,
+     "avgCost": 510,
+     "assetType": "equity",
+     "orgName": "Advanced Micro Devices Inc.",
+     "currentPrice": 521.95,
+     "returnPct": 2.3431,
+     "analystRec": "Buy (71%), Hold (20%)",
+     "medianTarget": 482.5
+    },
+    {
+     "id": "89",
+     "ticker": "TSLA",
+     "qty": 2,
+     "avgCost": 400,
+     "assetType": "equity",
+     "orgName": "Tesla Inc.",
+     "currentPrice": 313.03,
+     "returnPct": -21.7425,
+     "analystRec": "Buy (38%), Hold (36%)",
+     "medianTarget": 450
+    },
+    {
+     "id": "55",
+     "ticker": "GOOG",
+     "qty": 103,
+     "avgCost": 253.2,
+     "assetType": "equity",
+     "orgName": "Alphabet Inc. Class C",
+     "currentPrice": 319.09,
+     "returnPct": 26.0229,
+     "analystRec": "Buy (68%), Strong Buy (22%)",
+     "medianTarget": 430
+    }
+   ],
+   "watchlist": [
+    {
+     "id": "78",
+     "ticker": "GOOG",
+     "source": "manual",
+     "orgName": "Alphabet Inc. Class C"
+    },
+    {
+     "id": "79",
+     "ticker": "TSLA",
+     "source": "manual",
+     "orgName": "Tesla Inc."
+    }
+   ]
+  }
+ }
+]
