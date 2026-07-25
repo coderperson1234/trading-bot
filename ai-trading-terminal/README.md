@@ -66,5 +66,10 @@ dropped in later.
 
 ## Storage
 
-A JSON file at `server/data/db.json` (created on first run, seeded with demo
-clients). Swap `server/store.js` for a real database in production.
+Two modes, chosen automatically:
+
+- **`DATABASE_URL` set** — state persists to Postgres (works great with a
+  free [Neon](https://neon.tech) or Supabase database). Survives restarts
+  and redeploys, so use this for hosted deployments.
+- **No `DATABASE_URL`** — state persists to a local JSON file at
+  `server/data/db.json`. Ideal for local development.

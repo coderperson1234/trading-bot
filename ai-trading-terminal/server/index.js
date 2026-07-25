@@ -18,4 +18,12 @@ app.use((err, _req, res, _next) => {
 });
 
 const PORT = process.env.PORT || 8787;
-app.listen(PORT, () => console.log(`AI trading terminal server listening on :${PORT}`));
+require('./store')
+  .init()
+  .then(() => {
+    app.listen(PORT, () => console.log(`AI trading terminal server listening on :${PORT}`));
+  })
+  .catch((e) => {
+    console.error('Failed to initialise data store:', e.message);
+    process.exit(1);
+  });

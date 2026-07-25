@@ -9,6 +9,11 @@ services:
     envVars:
       - key: JWT_SECRET
         generateValue: true
+      # Paste your free Neon (or Supabase) Postgres connection string here to
+      # make data survive restarts and redeploys. Without it, data lives in a
+      # local file and resets whenever the free instance restarts.
+      - key: DATABASE_URL
+        sync: false
       # Uncomment and fill these in (Render dashboard → Environment) to enable
       # live Alpaca trading data. Paper keys recommended.
       # - key: ALPACA_API_KEY_ID
