@@ -47,6 +47,8 @@ const SECTOR_HINTS = [
 ];
 
 function sectorFor(ticker) {
+  const cat = catalogByTicker.get(ticker);
+  if (cat && cat.sector && cat.sector !== '—') return cat.sector;
   for (const [re, sector] of SECTOR_HINTS) if (re.test(ticker)) return sector;
   const s = stockByTicker.get(ticker);
   if (s && s.type === 'etf') return 'US Equity';

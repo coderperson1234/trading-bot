@@ -227,29 +227,49 @@ function screener(query) {
   const wantsTech = /tech|software|semi|ai\b|chip/.test(q);
   const wantsHealth = /health|pharma|biotech/.test(q);
   const wantsFin = /bank|financ/.test(q);
+  const wantsEnergy = /energy|oil|gas|petrol/.test(q);
+  const wantsStaples = /staple|consumer goods|food|beverage|drink|tobacco/.test(q);
+  const wantsLuxury = /luxury|fashion|apparel|clothing|retail|consumer disc|brand|footwear|shoe|handbag/.test(q);
   const wantsGrowth = /growth|momentum/.test(q);
   const wantsValue = /value|cheap|low p\/?e/.test(q);
+  // Region hint — many international names carry country cues in their name.
+  const wantsEurope = /europe|european|eu\b|swiss|french|german|italian|british|uk\b|dutch|nordic|spanish/.test(q);
+  const EURO_HINT = /\((ADR)\)|N\.V\.|S\.A\.|S\.p\.A\.|PLC|plc|AG$|AG \(|SE$|SE \(|A\/S|ASA|Holding AG|Group AG|Corp\.$/;
+  const EURO_TICKERS = new Set(['RACE', 'ASML', 'SAP', 'STM', 'NOK', 'ERIC', 'SPOT', 'NVO', 'NVS', 'AZN', 'SNY', 'GSK', 'UL', 'DEO', 'BUD', 'BTI', 'SHEL', 'TTE', 'BP', 'E', 'EQNR', 'HSBC', 'BCS', 'DB', 'UBS', 'ING', 'STLA']);
+  const isEuropean = (s) => EURO_TICKERS.has(s.ticker) || /\(ADR\)/.test(s.name) || EURO_HINT.test(s.name);
 
   let list = stocks.filter((s) => s.type === (wantsEtf ? 'etf' : s.type));
   if (!wantsEtf) list = list.filter((s) => s.type === 'equity');
   list = list.filter((s) => {
     const sector = sectorFor(s.ticker);
+    if (wantsLuxury) return sector === 'Consumer Disc.';
     if (wantsTech) return sector === 'Technology';
     if (wantsHealth) return sector === 'Healthcare';
     if (wantsFin) return sector === 'Financials';
+    if (wantsEnergy) return sector === 'Energy';
+    if (wantsStaples) return sector === 'Cons. Staples';
     if (wantsDiv) return ['Cons. Staples', 'Financials', 'Energy', 'Healthcare', 'US Equity'].includes(sector);
     return true;
   });
+  // If Europe is requested, prioritise (and, when we have enough, restrict to)
+  // international names so the results reflect the region.
+  if (wantsEurope) {
+    const euro = list.filter(isEuropean);
+    if (euro.length >= 5) list = euro;
+    else list = [...euro, ...list.filter((s) => !isEuropean(s))];
+  }
   const results = list.slice(0, 15).map((s) => {
     const price = basePrice(s.ticker);
     const seed = [...s.ticker].reduce((h, c) => (h * 31 + c.charCodeAt(0)) >>> 0, 0);
+    const euro = isEuropean(s);
+    const isAdr = /\(ADR\)/.test(s.name);
     return {
       ticker: s.ticker,
       name: s.name,
       sector: sectorFor(s.ticker),
       industry: sectorFor(s.ticker),
-      country: 'US',
-      exchange: 'NYSE/NASDAQ',
+      country: euro ? 'Intl' : 'US',
+      exchange: euro ? (isAdr ? 'US ADR (OTC)' : 'NYSE/NASDAQ ADR') : 'NYSE/NASDAQ',
       price,
       market_cap_usd: (10 + (seed % 2500)) * 1e9,
       revenue_growth_y1_pct: wantsGrowth ? 15 + (seed % 30) : 3 + (seed % 15),
