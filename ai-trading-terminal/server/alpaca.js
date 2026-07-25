@@ -56,6 +56,24 @@ async function latestPrice(uid, symbol) {
   return body && body.trade ? body.trade.p : null;
 }
 
+// Bulk latest prices for many symbols in one request. Returns { SYM: price }.
+// Symbols Alpaca doesn't cover (e.g. OTC ADRs) are simply omitted.
+async function latestPrices(uid, symbols) {
+  const uniq = [...new Set(symbols.filter(Boolean))];
+  if (!uniq.length) return {};
+  const out = {};
+  // Alpaca caps symbols per request; chunk to be safe.
+  for (let i = 0; i < uniq.length; i += 100) {
+    const chunk = uniq.slice(i, i + 100);
+    const q = new URLSearchParams({ symbols: chunk.join(','), feed: 'iex' });
+    const body = await data(uid, `/v2/stocks/trades/latest?${q}`);
+    for (const [sym, trade] of Object.entries((body && body.trades) || {})) {
+      if (trade && Number.isFinite(trade.p)) out[sym] = trade.p;
+    }
+  }
+  return out;
+}
+
 async function news(uid, symbols, limit = 30) {
   const q = new URLSearchParams({ symbols: symbols.join(','), limit: String(limit), sort: 'desc' });
   const body = await data(uid, `/v1beta1/news?${q}`);
@@ -86,4 +104,4 @@ async function bars(uid, symbol, timeframe = '1Day', limit = 200) {
   return (body.bars || []).map((b) => ({ t: b.t, o: b.o, h: b.h, l: b.l, c: b.c, v: b.v }));
 }
 
-module.exports = { credsFor, configured, trading, data, latestPrice, news, bars };
+module.exports = { credsFor, configured, trading, data, latestPrice, latestPrices, news, bars };

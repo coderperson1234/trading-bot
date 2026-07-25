@@ -66,16 +66,34 @@ function myClients(uid) {
   return db.clients[uid];
 }
 
-router.get('/clients', requireAuth, (req, res) => {
-  const rows = myClients(req.uid).map((c) => ({
+router.get('/clients', requireAuth, async (req, res) => {
+  const clients = myClients(req.uid);
+
+  // When Alpaca is connected, refresh every holding's price with the live
+  // market price so AUM and total return are accurate (not a stale snapshot).
+  let live = {};
+  if (alpaca.configured(req.uid)) {
+    const tickers = clients.flatMap((c) => c.portfolio.holdings.map((h) => h.ticker));
+    try {
+      live = await alpaca.latestPrices(req.uid, tickers);
+    } catch {
+      live = {}; // best-effort — fall back to stored / local prices
+    }
+  }
+
+  const priceFor = (h) => live[h.ticker] ?? h.currentPrice ?? basePrice(h.ticker);
+  const rows = clients.map((c) => ({
     ...c,
     portfolio: {
       ...c.portfolio,
-      holdings: c.portfolio.holdings.map((h) => ({
-        ...h,
-        currentPrice: h.currentPrice || basePrice(h.ticker),
-        returnPct: h.avgCost > 0 ? (((h.currentPrice || basePrice(h.ticker)) - h.avgCost) / h.avgCost) * 100 : 0,
-      })),
+      holdings: c.portfolio.holdings.map((h) => {
+        const price = priceFor(h);
+        return {
+          ...h,
+          currentPrice: price,
+          returnPct: h.avgCost > 0 ? ((price - h.avgCost) / h.avgCost) * 100 : 0,
+        };
+      }),
     },
   }));
   res.json(rows);
