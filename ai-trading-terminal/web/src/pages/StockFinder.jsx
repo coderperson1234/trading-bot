@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { api } from '../lib/api';
 import { fmtUsd, fmtBigUsd } from '../lib/format';
 import { AiThinking } from '../components/ui';
+import AddToPortfolio from '../components/AddToPortfolio';
 
 const MESSAGES = ['Interpreting your query…', 'Scanning the universe…', 'Applying filters…', 'Ranking matches…'];
 const MAX_LEN = 500;
@@ -107,11 +108,17 @@ export default function StockFinder() {
               <div style={{ marginTop: 16, overflowX: 'auto' }}>
                 <table style={{ width: '100%', borderCollapse: 'collapse', border: '1px solid var(--line)' }}>
                   <thead>
-                    <tr>{columns.map((c) => <th key={c} style={{ ...th, textAlign: TEXT_COLS.has(c) ? 'left' : 'center' }}>{colLabel(c)}</th>)}</tr>
+                    <tr>
+                      <th style={{ ...th, width: 96, position: 'sticky', left: 0, zIndex: 1 }}></th>
+                      {columns.map((c) => <th key={c} style={{ ...th, textAlign: TEXT_COLS.has(c) ? 'left' : 'center' }}>{colLabel(c)}</th>)}
+                    </tr>
                   </thead>
                   <tbody>
                     {rows.map((r, i) => (
                       <tr key={i} style={{ background: i % 2 ? 'oklch(0.98 0.006 250)' : 'var(--surface)' }}>
+                        <td style={{ ...td, textAlign: 'center', whiteSpace: 'nowrap', position: 'sticky', left: 0, background: i % 2 ? 'oklch(0.98 0.006 250)' : 'var(--surface)' }}>
+                          <AddToPortfolio ticker={r.ticker} name={r.name} />
+                        </td>
                         {columns.map((c) => (
                           <td key={c} className={TEXT_COLS.has(c) ? '' : 'tnum'}
                             style={{

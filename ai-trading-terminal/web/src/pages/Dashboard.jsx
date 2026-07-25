@@ -5,6 +5,7 @@ import { api } from '../lib/api';
 import { portfolioStats, allocationByType, TYPE_COLOR, PI_CATEGORY_COLOR, RISK_TARGETS, SECTOR_BUCKET } from '../lib/portfolio';
 import { fmtUsd, fmtPct, fmtNum, fmtDate } from '../lib/format';
 import { Icon, RiskPill, ActionPill, NaTip, SectionedSummary, AiThinking, EmptyState } from '../components/ui';
+import AddToPortfolio from '../components/AddToPortfolio';
 
 const REBAL_MESSAGES = [
   'Analysing portfolio allocations…',
@@ -168,7 +169,7 @@ function buildPlan(client, stats) {
         horizons = [cell('Hold', 'Hold'), cell('Hold', 'Add on weakness'), cell('Hold', 'Steady grower'), cell('Hold', 'Core position')];
         commentary = 'Quality single-name; hold as a core position and diversify single-stock risk over time.';
       }
-      return { ticker: row.ticker, org: row.name, fit: fitCodes(row), weight: row.weight, horizons, commentary };
+      return { ticker: row.ticker, org: row.name, assetType: row.assetType, fit: fitCodes(row), weight: row.weight, horizons, commentary };
     }),
   };
 }
@@ -191,6 +192,7 @@ function PlanTable({ rows }) {
                 <th key={h} style={{ textAlign: 'center', width: 116 }}>{h}</th>
               ))}
               <th>Commentary</th>
+              <th style={{ width: 96 }}></th>
             </tr>
           </thead>
           <tbody>
@@ -212,6 +214,9 @@ function PlanTable({ rows }) {
                 ))}
                 <td style={{ verticalAlign: 'top' }}>
                   <div className="tiny" style={{ color: 'var(--ink-2)', lineHeight: 1.45 }}>{r.commentary}</div>
+                </td>
+                <td style={{ verticalAlign: 'top', textAlign: 'right' }}>
+                  <AddToPortfolio ticker={r.ticker} name={r.org} assetType={r.assetType} />
                 </td>
               </tr>
             ))}

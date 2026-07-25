@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useActiveClient } from '../lib/store';
 import { api } from '../lib/api';
 import { Icon, AiThinking, EmptyState } from '../components/ui';
+import AddToPortfolio from '../components/AddToPortfolio';
 
 const MESSAGES = [
   'Scanning global market universe…',
@@ -108,6 +109,7 @@ export default function Recommender() {
                     <th style={{ width: 140 }}>Philosophy</th>
                     <th>Commentary</th>
                     <th style={{ width: 110 }}>Generated</th>
+                    <th style={{ width: 96 }}></th>
                   </tr>
                 </thead>
                 <tbody>
@@ -121,6 +123,9 @@ export default function Recommender() {
                         <span className="tiny muted">
                           {new Date(it.generatedAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}
                         </span>
+                      </td>
+                      <td style={{ textAlign: 'right' }}>
+                        <AddToPortfolio ticker={it.ticker} name={it.orgName} />
                       </td>
                     </tr>
                   ))}
