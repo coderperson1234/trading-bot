@@ -35,15 +35,22 @@ module.exports = {
     const ma = sma(closes, trendMa);
     const aboveTrend = ma == null || now >= ma;
 
+    const metrics = {
+      [`momentum_${lookback}bar_pct`]: +ret.toFixed(2),
+      [`ma_${trendMa}`]: ma == null ? null : +ma.toFixed(2),
+      price_above_ma: aboveTrend,
+      entry_threshold_pct: entryPct,
+      exit_threshold_pct: exitPct,
+    };
     if (!position) {
       if (ret >= entryPct && aboveTrend) {
-        return { signal: 'buy', reason: `${lookback}-bar momentum +${ret.toFixed(1)}% ≥ ${entryPct}% and price above MA(${trendMa})` };
+        return { signal: 'buy', metrics, reason: `${lookback}-bar momentum +${ret.toFixed(1)}% ≥ ${entryPct}% and price above MA(${trendMa})` };
       }
-      return { signal: 'hold', reason: `Momentum ${ret >= 0 ? '+' : ''}${ret.toFixed(1)}% below entry ${entryPct}%${aboveTrend ? '' : ' / under MA'}` };
+      return { signal: 'hold', metrics, reason: `Momentum ${ret >= 0 ? '+' : ''}${ret.toFixed(1)}% below entry ${entryPct}%${aboveTrend ? '' : ' / under MA'}` };
     }
     if (ret < exitPct || !aboveTrend) {
-      return { signal: 'sell', reason: `Momentum faded to ${ret >= 0 ? '+' : ''}${ret.toFixed(1)}%${aboveTrend ? '' : ' and price under MA(' + trendMa + ')'} — exiting` };
+      return { signal: 'sell', metrics, reason: `Momentum faded to ${ret >= 0 ? '+' : ''}${ret.toFixed(1)}%${aboveTrend ? '' : ' and price under MA(' + trendMa + ')'} — exiting` };
     }
-    return { signal: 'hold', reason: `Riding momentum ${ret >= 0 ? '+' : ''}${ret.toFixed(1)}% — above exit ${exitPct}%` };
+    return { signal: 'hold', metrics, reason: `Riding momentum ${ret >= 0 ? '+' : ''}${ret.toFixed(1)}% — above exit ${exitPct}%` };
   },
 };

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useActiveClient } from '../lib/store';
 import { api } from '../lib/api';
 import { Icon, AiThinking, SectionedSummary, TickerSearchBox } from '../components/ui';
+import SimulatedNotice from '../components/SimulatedNotice';
 import { fmtUsd } from '../lib/format';
 
 const MESSAGES = [
@@ -75,6 +76,7 @@ export default function Swarm() {
             Ask the AI swarm to analyse any security, company, or fund.
           </div>
         </div>
+        <SimulatedNotice what="analyst target and rating" />
         <div className="card card-pad" style={{ marginBottom: 16, overflow: 'visible' }}>
           <TickerSearchBox stocks={stocks} onPick={analyse}
             placeholder="Enter the security, company or fund you want the AI to analyse" />

@@ -25,10 +25,11 @@ module.exports = {
     if (fast == null || slow == null || prevFast == null || prevSlow == null) {
       return { signal: 'hold', reason: `Not enough history (${closes.length} bars) for SMA(${slowN})` };
     }
+    const metrics = { [`sma_${fastN}`]: +fast.toFixed(2), [`sma_${slowN}`]: +slow.toFixed(2), spread: +(fast - slow).toFixed(2) };
     const crossedUp = prevFast <= prevSlow && fast > slow;
     const crossedDown = prevFast >= prevSlow && fast < slow;
-    if (crossedUp && !position) return { signal: 'buy', reason: `SMA(${fastN}) ${fast.toFixed(2)} crossed above SMA(${slowN}) ${slow.toFixed(2)}` };
-    if (crossedDown && position) return { signal: 'sell', reason: `SMA(${fastN}) ${fast.toFixed(2)} crossed below SMA(${slowN}) ${slow.toFixed(2)}` };
-    return { signal: 'hold', reason: `SMA(${fastN}) ${fast.toFixed(2)} vs SMA(${slowN}) ${slow.toFixed(2)} — no fresh cross` };
+    if (crossedUp && !position) return { signal: 'buy', metrics, reason: `SMA(${fastN}) ${fast.toFixed(2)} crossed above SMA(${slowN}) ${slow.toFixed(2)}` };
+    if (crossedDown && position) return { signal: 'sell', metrics, reason: `SMA(${fastN}) ${fast.toFixed(2)} crossed below SMA(${slowN}) ${slow.toFixed(2)}` };
+    return { signal: 'hold', metrics, reason: `SMA(${fastN}) ${fast.toFixed(2)} vs SMA(${slowN}) ${slow.toFixed(2)} — no fresh cross` };
   },
 };

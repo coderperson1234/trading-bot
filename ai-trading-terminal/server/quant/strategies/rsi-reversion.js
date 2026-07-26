@@ -28,10 +28,11 @@ module.exports = {
     const period = Number(params.period) || 14;
     const value = rsi(closes, period);
     if (value == null) return { signal: 'hold', reason: `Not enough history for RSI(${period})` };
+    const metrics = { [`rsi_${period}`]: +value.toFixed(2) };
     const oversold = Number(params.oversold) || 30;
     const overbought = Number(params.overbought) || 70;
-    if (value <= oversold && !position) return { signal: 'buy', reason: `RSI(${period}) ${value.toFixed(1)} ≤ ${oversold} (oversold)` };
-    if (value >= overbought && position) return { signal: 'sell', reason: `RSI(${period}) ${value.toFixed(1)} ≥ ${overbought} (overbought)` };
-    return { signal: 'hold', reason: `RSI(${period}) at ${value.toFixed(1)} — inside neutral band` };
+    if (value <= oversold && !position) return { signal: 'buy', metrics, reason: `RSI(${period}) ${value.toFixed(1)} ≤ ${oversold} (oversold)` };
+    if (value >= overbought && position) return { signal: 'sell', metrics, reason: `RSI(${period}) ${value.toFixed(1)} ≥ ${overbought} (overbought)` };
+    return { signal: 'hold', metrics, reason: `RSI(${period}) at ${value.toFixed(1)} — inside neutral band` };
   },
 };

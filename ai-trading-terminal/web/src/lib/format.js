@@ -1,6 +1,9 @@
-export const fmtUsd = (n, d = 2) =>
-  (n < 0 ? '-$' : '$') +
-  Math.abs(n).toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d });
+export const fmtUsd = (n, d = 2) => {
+  // Never render a missing price as $0.00 — show it as unavailable.
+  if (n == null || !Number.isFinite(Number(n))) return '—';
+  return (n < 0 ? '-$' : '$') +
+    Math.abs(n).toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d });
+};
 
 export const fmtUsdCompact = (n) => {
   const abs = Math.abs(n);

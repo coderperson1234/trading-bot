@@ -2,12 +2,23 @@ const express = require('express');
 const bcrypt = require('bcryptjs');
 const { load, persist, nextId } = require('../store');
 const { sign, requireAuth } = require('../auth');
-const { stocks, basePrice } = require('../market');
+const { stocks } = require('../market');
 const insights = require('../insights');
 const alpaca = require('../alpaca');
 const quant = require('../quant/engine');
 
 const router = express.Router();
+
+// Resolve real market prices. Returns { SYM: price } containing ONLY symbols
+// the data provider actually covers. Never invents a price.
+async function livePrices(uid, tickers) {
+  if (!alpaca.configured(uid)) return {};
+  try {
+    return await alpaca.latestPrices(uid, tickers);
+  } catch {
+    return {};
+  }
+}
 
 // ---------- auth ----------
 router.post('/auth/login', (req, res) => {
@@ -81,7 +92,7 @@ router.get('/clients', requireAuth, async (req, res) => {
     }
   }
 
-  const priceFor = (h) => live[h.ticker] ?? h.currentPrice ?? basePrice(h.ticker);
+  const priceFor = (h) => live[h.ticker] ?? h.currentPrice ?? null;
   const rows = clients.map((c) => ({
     ...c,
     portfolio: {
@@ -119,7 +130,7 @@ router.post('/clients', requireAuth, (req, res) => {
         avgCost: Number(h.avgCost) || 0,
         assetType: h.assetType,
         orgName: h.orgName,
-        currentPrice: h.currentPrice || basePrice(h.ticker),
+        currentPrice: h.currentPrice ?? null,
       })),
       watchlist: ((c.portfolio && c.portfolio.watchlist) || c.watchlist || []).map((w) => ({
         id: nextId('watch'),
@@ -230,7 +241,7 @@ router.get('/prices/:ticker', requireAuth, async (req, res) => {
       if (price) return res.json({ ticker, price, source: 'alpaca' });
     } catch { /* fall through to local price */ }
   }
-  res.json({ ticker, price: basePrice(ticker), source: 'local' });
+  res.json({ ticker, price: null, source: 'unavailable' });
 });
 
 router.get('/news', requireAuth, async (req, res) => {
@@ -258,30 +269,58 @@ router.get('/rebalance/:clientId', requireAuth, async (req, res) => {
 router.get('/stock-summary', requireAuth, async (req, res) => {
   const tckr = String(req.query.tckr || '').toUpperCase();
   if (!tckr) return res.status(400).json({ error: 'tckr is required' });
-  const result = insights.stockSummary(tckr);
+  const prices = await livePrices(req.uid, [tckr]);
+  const price = prices[tckr] ?? null;
+  if (price == null) {
+    return res.status(422).json({
+      error: alpaca.configured(req.uid)
+        ? `No market price available for ${tckr} from your data provider (Alpaca's feed does not cover this symbol, e.g. OTC ADRs). Analysis needs a real price.`
+        : 'Connect Alpaca on the Trading tab to load real market prices for analysis.',
+    });
+  }
+  const result = insights.stockSummary(tckr, price);
   const upgraded = await insights.generateWithClaude(
-    `Write a three-paragraph investment read on ${tckr}. Paragraphs must start with "Bullish AI:", "Bearish AI:", "Balanced AI:" respectively. Use **bold** sparingly. Keep it under 250 words total.`,
+    `Write a three-paragraph investment read on ${tckr}, whose current market price is $${price}. Paragraphs must start with "Bullish AI:", "Bearish AI:", "Balanced AI:" respectively. Use **bold** sparingly. Keep it under 250 words total.`,
   );
   if (upgraded) result.summary = upgraded;
   res.json(result);
 });
 
-router.get('/predictions', requireAuth, (req, res) => {
+router.get('/predictions', requireAuth, async (req, res) => {
   const tckr = String(req.query.tckr || '').toUpperCase();
   if (!tckr) return res.status(400).json({ error: 'tckr is required' });
-  res.json(insights.predictions(tckr));
+  const prices = await livePrices(req.uid, [tckr]);
+  const price = prices[tckr] ?? null;
+  if (price == null) {
+    return res.status(422).json({
+      error: alpaca.configured(req.uid)
+        ? `No market price available for ${tckr} from your data provider (Alpaca's feed does not cover this symbol, e.g. OTC ADRs).`
+        : 'Connect Alpaca on the Trading tab to load real market prices.',
+    });
+  }
+  res.json(insights.predictions(tckr, price));
 });
 
-router.get('/valuation', requireAuth, (req, res) => {
+router.get('/valuation', requireAuth, async (req, res) => {
   const tickers = String(req.query.tickers || '').split(',').map((t) => t.trim().toUpperCase()).filter(Boolean);
   if (!tickers.length) return res.status(400).json({ error: 'tickers is required' });
-  res.json(insights.valuation(tickers));
+  const prices = await livePrices(req.uid, tickers);
+  if (!Object.keys(prices).length) {
+    return res.status(422).json({
+      error: alpaca.configured(req.uid)
+        ? 'No market prices available for these symbols from your data provider.'
+        : 'Connect Alpaca on the Trading tab to load real market prices.',
+    });
+  }
+  res.json(insights.valuation(tickers, prices));
 });
 
-router.get('/screener', requireAuth, (req, res) => {
+router.get('/screener', requireAuth, async (req, res) => {
   const query = String(req.query.query || '').trim();
   if (!query) return res.status(400).json({ error: 'query is required' });
-  res.json(insights.screener(query));
+  const shortlist = insights.screenerShortlist(query);
+  const prices = await livePrices(req.uid, shortlist);
+  res.json(insights.screener(query, prices));
 });
 
 router.get('/ai-watchlist', requireAuth, (req, res) => {
@@ -424,6 +463,11 @@ router.post('/quant/bots/:id/stop', requireAuth, (req, res) => {
   res.json({ ok: true });
 });
 
-router.get('/quant/bots/:id/logs', requireAuth, (req, res) => res.json(quant.botLogs(req.params.id)));
+router.get('/quant/bots/:id/logs', requireAuth, (req, res) => res.json(quant.botLogs(req.uid, req.params.id)));
+
+router.get('/quant/bots/:id/insights', requireAuth, async (req, res) => {
+  try { res.json(await quant.botInsights(req.uid, req.params.id)); }
+  catch (e) { res.status(404).json({ error: e.message }); }
+});
 
 module.exports = router;

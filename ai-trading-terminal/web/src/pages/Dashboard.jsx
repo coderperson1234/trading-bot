@@ -456,7 +456,7 @@ export default function Dashboard() {
               <div className="card-title">Holdings</div>
               <div className="card-sub">
                 {activeTab === 'stocks'
-                  ? `${stats.count} position${stats.count !== 1 ? 's' : ''} · edit in Manage Portfolios`
+                  ? `${stats.count} position${stats.count !== 1 ? 's' : ''} · edit in Manage Portfolios${stats.unpricedCount ? ` · ${stats.unpricedCount} without a market price (excluded from totals)` : ''}`
                   : `${pis.length} other investment${pis.length !== 1 ? 's' : ''} · edit in Manage Portfolios`}
               </div>
             </div>
@@ -520,8 +520,14 @@ export default function Dashboard() {
                     <td>{r.assetType ? <span className="pill pill-gray" style={{ fontSize: 11.5, padding: '2px 8px' }}>{r.assetType}</span> : <span className="muted tiny">—</span>}</td>
                     <td className="tnum">{fmtNum(r.qty)}</td>
                     <td className="tnum muted">{r.avgCost > 0 ? fmtUsd(r.avgCost) : '—'}</td>
-                    <td className="tnum" style={{ fontWeight: 600 }}>{fmtUsd(r.price)}</td>
-                    <td className={'tnum ' + (r.gain >= 0 ? 'pos' : 'neg')} style={{ fontWeight: 600 }}>{fmtPct(r.gainPct, 1)}</td>
+                    <td className="tnum" style={{ fontWeight: 600 }}>
+                      {r.priceUnavailable
+                        ? <span className="tip" data-tip="No market price from your data provider for this symbol" style={{ color: 'var(--ink-4)' }}>no price ⓘ</span>
+                        : fmtUsd(r.price)}
+                    </td>
+                    <td className={'tnum ' + (r.gain >= 0 ? 'pos' : 'neg')} style={{ fontWeight: 600 }}>
+                      {r.priceUnavailable ? <span className="muted">—</span> : fmtPct(r.gainPct, 1)}
+                    </td>
                     <td className="tnum muted">{r.weight.toFixed(1)}%</td>
                     <td><AnalystRec rec={r.analystRec} assetType={r.assetType} /></td>
                     <td className="tnum">

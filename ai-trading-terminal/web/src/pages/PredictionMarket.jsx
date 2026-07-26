@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { api } from '../lib/api';
 import { fmtUsd, fmtPct, fmtNum } from '../lib/format';
 import { Icon, AiThinking, TickerSearchBox } from '../components/ui';
+import SimulatedNotice from '../components/SimulatedNotice';
 
 const MESSAGES = [
   'Fetching analyst consensus & price targets…',
@@ -295,6 +296,7 @@ export default function PredictionMarket() {
             Search a security to see an AI prediction read across sentiment, valuation, macro, industry & competitor dimensions.
           </div>
         </div>
+        <SimulatedNotice what="analyst estimates and prediction-market odds" />
         <div className="card card-pad" style={{ marginBottom: 16, overflow: 'visible' }}>
           <TickerSearchBox stocks={stocks} onPick={predict} placeholder="Enter a security, company or fund to predict — one at a time" />
         </div>

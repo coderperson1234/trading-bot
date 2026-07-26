@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { api } from '../lib/api';
 import { fmtUsd, fmtBigUsd } from '../lib/format';
 import { AiThinking } from '../components/ui';
+import SimulatedNotice from '../components/SimulatedNotice';
 import AddToPortfolio from '../components/AddToPortfolio';
 
 const MESSAGES = ['Interpreting your query…', 'Scanning the universe…', 'Applying filters…', 'Ranking matches…'];
@@ -71,6 +72,7 @@ export default function StockFinder() {
             Describe the stocks you're looking for in plain English and let the AI Stock Finder match them.
           </div>
         </div>
+        <SimulatedNotice what="fundamentals (market cap, P/E, growth, yield) and ratings" />
 
         <div className="card card-pad" style={{ marginBottom: 16 }}>
           <textarea className="input" style={{ width: '100%', minHeight: 60, resize: 'vertical', fontSize: 14.5, lineHeight: 1.5 }}

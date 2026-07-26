@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { api } from '../lib/api';
 import { fmtUsd, fmtPct, fmtBigUsd } from '../lib/format';
 import { Icon, AiThinking } from '../components/ui';
+import SimulatedNotice from '../components/SimulatedNotice';
 
 const MESSAGES = [
   'Pulling comparable multiples…',
@@ -232,6 +233,7 @@ export default function Valuation() {
             Search one or more securities and compare their valuation ranges side by side.
           </div>
         </div>
+        <SimulatedNotice what="DCF ranges, comparable multiples and analyst targets" />
 
         <div className="card card-pad" style={{ marginBottom: 16, overflow: 'visible' }}>
           <div style={{ position: 'relative' }}>

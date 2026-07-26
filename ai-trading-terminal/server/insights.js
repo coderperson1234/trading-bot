@@ -1,7 +1,9 @@
 // Deterministic "AI" insight generators so the app is fully functional
 // offline. When ANTHROPIC_API_KEY is set, text endpoints upgrade to real
 // model-written commentary via generateWithClaude().
-const { lookup, stocks, basePrice, sectorFor } = require('./market');
+const { lookup, stocks, sectorFor } = require('./market');
+
+const EURO_TICKERS = new Set(['RACE','ASML','SAP','STM','NOK','ERIC','SPOT','NVO','NVS','AZN','SNY','GSK','UL','DEO','BUD','BTI','SHEL','TTE','BP','E','EQNR','HSBC','BCS','DB','UBS','ING','STLA']);
 
 const SECTOR_BUCKET = {
   Technology: 'Equity', 'Consumer Disc.': 'Equity', Financials: 'Equity',
@@ -19,7 +21,7 @@ const RISK_TARGETS = {
 function portfolioRows(client) {
   const rows = client.portfolio.holdings.map((h) => {
     const info = lookup(h.ticker);
-    const price = h.currentPrice || basePrice(h.ticker);
+    const price = h.currentPrice ?? 0; // caller refreshes with live prices
     const value = h.qty * price;
     const cost = h.qty * h.avgCost;
     return {
@@ -61,9 +63,9 @@ function rebalanceSummary(client) {
   ].join('\n\n');
 }
 
-function stockSummary(ticker) {
+function stockSummary(ticker, price) {
   const info = lookup(ticker);
-  const price = basePrice(ticker);
+  if (price == null) return null; // never fabricate a price
   const target = Math.round(price * 1.18);
   return {
     tckr: ticker,
@@ -80,9 +82,9 @@ function stockSummary(ticker) {
   };
 }
 
-function predictions(ticker) {
+function predictions(ticker, price) {
   const info = lookup(ticker);
-  const price = basePrice(ticker);
+  if (price == null) return null; // never fabricate a price
   const avgTarget = Math.round(price * 1.16);
   const seed = [...ticker].reduce((h, c) => (h * 31 + c.charCodeAt(0)) >>> 0, 0);
   const bull = 45 + (seed % 30);
@@ -166,7 +168,9 @@ function predictions(ticker) {
   };
 }
 
-function valuation(tickers) {
+function valuation(tickers, priceMap = {}) {
+  const unavailable = tickers.filter((t) => priceMap[t] == null);
+  tickers = tickers.filter((t) => priceMap[t] != null);
   const universe = tickers.map((t) => {
     const info = lookup(t);
     return { ticker: t, name: info.name, sector: info.sector, industry: info.sector, is_index_ticker: true };
@@ -174,7 +178,7 @@ function valuation(tickers) {
   const football_fields = {};
   const scorecard = [];
   for (const t of tickers) {
-    const price = basePrice(t);
+    const price = priceMap[t];
     const seed = [...t].reduce((h, c) => (h * 31 + c.charCodeAt(0)) >>> 0, 0);
     const spread = 0.12 + (seed % 10) / 100;
     football_fields[t] = {
@@ -211,6 +215,7 @@ function valuation(tickers) {
     universe,
     football_fields,
     scorecard,
+    unavailable,
     takeaways: [
       `${tickers[0]} anchors the comparison — its blended midpoint sits ${Math.random() > 0.5 ? 'above' : 'near'} the current price, with analyst targets the most generous method.`,
       'DCF ranges are the widest across the set; treat the midpoints as scenario centre-points rather than point estimates.',
@@ -220,7 +225,12 @@ function valuation(tickers) {
   };
 }
 
-function screener(query) {
+// Candidate symbols for a query — used to fetch real prices before building rows.
+function screenerShortlist(query) {
+  return screenCandidates(query).slice(0, 15).map((s) => s.ticker);
+}
+
+function screenCandidates(query) {
   const q = query.toLowerCase();
   const wantsEtf = /\betf|index|fund\b/.test(q);
   const wantsDiv = /dividend|income|yield/.test(q);
@@ -235,7 +245,6 @@ function screener(query) {
   // Region hint — many international names carry country cues in their name.
   const wantsEurope = /europe|european|eu\b|swiss|french|german|italian|british|uk\b|dutch|nordic|spanish/.test(q);
   const EURO_HINT = /\((ADR)\)|N\.V\.|S\.A\.|S\.p\.A\.|PLC|plc|AG$|AG \(|SE$|SE \(|A\/S|ASA|Holding AG|Group AG|Corp\.$/;
-  const EURO_TICKERS = new Set(['RACE', 'ASML', 'SAP', 'STM', 'NOK', 'ERIC', 'SPOT', 'NVO', 'NVS', 'AZN', 'SNY', 'GSK', 'UL', 'DEO', 'BUD', 'BTI', 'SHEL', 'TTE', 'BP', 'E', 'EQNR', 'HSBC', 'BCS', 'DB', 'UBS', 'ING', 'STLA']);
   const isEuropean = (s) => EURO_TICKERS.has(s.ticker) || /\(ADR\)/.test(s.name) || EURO_HINT.test(s.name);
 
   let list = stocks.filter((s) => s.type === (wantsEtf ? 'etf' : s.type));
@@ -258,8 +267,14 @@ function screener(query) {
     if (euro.length >= 5) list = euro;
     else list = [...euro, ...list.filter((s) => !isEuropean(s))];
   }
+  return list;
+}
+
+function screener(query, priceMap = {}) {
+  const list = screenCandidates(query);
+  const isEuropean = (s) => /\(ADR\)/.test(s.name) || EURO_TICKERS.has(s.ticker);
   const results = list.slice(0, 15).map((s) => {
-    const price = basePrice(s.ticker);
+    const price = priceMap[s.ticker] ?? null;
     const seed = [...s.ticker].reduce((h, c) => (h * 31 + c.charCodeAt(0)) >>> 0, 0);
     const euro = isEuropean(s);
     const isAdr = /\(ADR\)/.test(s.name);
@@ -374,6 +389,7 @@ function r2(n) {
 }
 
 module.exports = {
+  screenerShortlist,
   portfolioRows,
   rebalanceSummary,
   stockSummary,

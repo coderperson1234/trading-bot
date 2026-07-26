@@ -1,4 +1,8 @@
-// Market data helpers: master stock list, catalog with sectors, price lookup.
+// Instrument reference data: master list + sector/type metadata.
+//
+// IMPORTANT: this module deliberately contains NO prices. Prices must always
+// come from the market data provider (Alpaca). If a price is unavailable for a
+// symbol, the app shows it as unavailable rather than inventing a number.
 const fs = require('fs');
 const path = require('path');
 
@@ -8,30 +12,7 @@ const catalog = JSON.parse(fs.readFileSync(path.join(__dirname, 'data', 'catalog
 const catalogByTicker = new Map(catalog.map((s) => [s.ticker, s]));
 const stockByTicker = new Map(stocks.map((s) => [s.ticker, s]));
 
-// Deterministic pseudo-price for tickers we have no data for, so the demo
-// works fully offline. Seeded by ticker so it is stable across restarts.
-function syntheticPrice(ticker) {
-  let h = 0;
-  for (const ch of ticker) h = (h * 31 + ch.charCodeAt(0)) >>> 0;
-  return Math.round((20 + (h % 480) + (h % 97) / 100) * 100) / 100;
-}
-
-function basePrice(ticker) {
-  const cat = catalogByTicker.get(ticker);
-  if (cat && cat.price > 0) return cat.price;
-  return syntheticPrice(ticker);
-}
-
-function lookup(ticker) {
-  return (
-    catalogByTicker.get(ticker) ||
-    (stockByTicker.get(ticker)
-      ? { ...stockByTicker.get(ticker), sector: sectorFor(ticker), price: basePrice(ticker), chg: 0 }
-      : { ticker, name: ticker, sector: '—', type: 'equity', price: syntheticPrice(ticker), chg: 0 })
-  );
-}
-
-// Coarse sector guess for master-list tickers missing from the rich catalog.
+// Coarse sector classification, used for allocation buckets and screening.
 const SECTOR_HINTS = [
   [/^(AAPL|MSFT|NVDA|AMD|GOOG|GOOGL|META|ORCL|CRM|ADBE|INTC|CSCO|IBM|QCOM|TXN|AVGO|NOW|PLTR|SNOW|MU|TSM|ACN)$/, 'Technology'],
   [/^(JPM|BAC|WFC|GS|MS|C|BLK|SCHW|AXP|COF|BK|USB|PNC|TFC|AIG|MET|PRU|V|MA|PYPL)$/, 'Financials'],
@@ -53,7 +34,19 @@ function sectorFor(ticker) {
   const s = stockByTicker.get(ticker);
   if (s && s.type === 'etf') return 'US Equity';
   if (s && s.type === 'bond') return 'Fixed Income';
-  return 'Technology';
+  return 'Other';
 }
 
-module.exports = { stocks, catalog, lookup, basePrice, sectorFor };
+// Metadata only — never a price.
+function lookup(ticker) {
+  const cat = catalogByTicker.get(ticker);
+  const base = stockByTicker.get(ticker);
+  return {
+    ticker,
+    name: (cat && cat.name) || (base && base.name) || ticker,
+    type: (cat && cat.type) || (base && base.type) || 'equity',
+    sector: sectorFor(ticker),
+  };
+}
+
+module.exports = { stocks, catalog, lookup, sectorFor };

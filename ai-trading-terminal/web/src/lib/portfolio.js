@@ -38,8 +38,8 @@ export function lookupStock(ticker) {
 export function holdingRows(portfolio) {
   return portfolio.holdings.map((h) => {
     const info = lookupStock(h.ticker);
-    const price = h.currentPrice ?? 0;
-    const value = h.qty * price;
+    const price = h.currentPrice ?? null;
+    const value = price == null ? 0 : h.qty * price;
     const cost = h.qty * h.avgCost;
     const gain = value - cost;
     return {
@@ -49,16 +49,20 @@ export function holdingRows(portfolio) {
       price,
       value,
       cost,
-      gain,
-      gainPct: price > 0 && cost > 0 ? (gain / cost) * 100 : h.returnPct ?? 0,
+      gain: price == null ? 0 : gain,
+      priceUnavailable: price == null,
+      gainPct: price != null && price > 0 && cost > 0 ? (gain / cost) * 100 : 0,
     };
   });
 }
 
 export function portfolioStats(portfolio) {
   const rows = holdingRows(portfolio);
-  const value = rows.reduce((s, r) => s + r.value, 0);
-  const cost = rows.reduce((s, r) => s + r.cost, 0);
+  // Holdings without a market price are excluded from value/cost/return so a
+  // missing price can never distort the totals. They're flagged in the table.
+  const priced = rows.filter((r) => !r.priceUnavailable);
+  const value = priced.reduce((s, r) => s + r.value, 0);
+  const cost = priced.reduce((s, r) => s + r.cost, 0);
   const gain = value - cost;
   return {
     rows: rows.map((r) => ({ ...r, weight: value > 0 ? (r.value / value) * 100 : 0 })),
@@ -67,6 +71,7 @@ export function portfolioStats(portfolio) {
     gain,
     gainPct: cost > 0 ? (gain / cost) * 100 : 0,
     count: portfolio.holdings.length,
+    unpricedCount: rows.length - priced.length,
   };
 }
 

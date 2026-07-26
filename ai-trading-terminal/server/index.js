@@ -21,6 +21,7 @@ const PORT = process.env.PORT || 8787;
 require('./store')
   .init()
   .then(() => {
+    require('./quant/engine').resumeRunningBots();
     app.listen(PORT, () => console.log(`AI trading terminal server listening on :${PORT}`));
   })
   .catch((e) => {
